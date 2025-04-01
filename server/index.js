@@ -1,15 +1,15 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { serve } from "@hono/node-server";
+import express from "express";
+import cors from "cors";
 
-const app = new Hono();
+const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 
-console.log(`Server running with honor on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
-serve({
-  fetch: app.fetch,
-  port: PORT,
+app.listen(PORT, () => {
+  console.log(`Server running with express on port ${PORT}`);
 });

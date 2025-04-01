@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "wouter";
 import { useNote } from "./useNote";
 import styles from "./Note.module.css";
 import RichTextEditor from "../../components/RichTextEditor";
 import { useAuth } from "../../context/AuthContext";
-import { useNotes } from "../../context/NotesContext";
 
 const Note = () => {
   const { id } = useParams();
-  const { note, isLoading, error } = useNote(id!);
+  const { note, isLoading, error, updateNote } = useNote(id!);
   const { username } = useAuth();
-  const { updateNote } = useNotes();
   const [isEditing, setIsEditing] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -33,7 +31,7 @@ const Note = () => {
         content,
         updatedBy: username!,
       };
-      updateNote(note.id, updatedNote);
+      updateNote(updatedNote);
     }
   };
 

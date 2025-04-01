@@ -8,6 +8,8 @@ export const useNote = (id: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const updateNote = async (note: Note) => {};
+
   useEffect(() => {
     const fetchNote = async () => {
       try {
@@ -22,5 +24,5 @@ export const useNote = (id: string) => {
     fetchNote();
   }, [id]);
 
-  return { note, isLoading, error };
+  return { note, isLoading, error, updateNote };
 };

@@ -285,10 +285,7 @@ export const RichTextEditor = ({
   onChange,
 }: RichTextEditorProps) => {
   // Handler for editor changes
-  const handleEditorChange = (
-    editorState: EditorState,
-    editor: LexicalEditor
-  ) => {
+  const handleEditorChange = (_: EditorState, editor: LexicalEditor) => {
     editor.update(() => {
       const root = $getRoot();
       const content = root.getTextContent();

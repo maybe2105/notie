@@ -1,0 +1,25 @@
+{
+  "name": "notie",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root package",
+  "scripts": {
+    "install:client": "cd client && pnpm install",
+    "install:server": "cd server && pnpm install",
+    "install": "pnpm run install:client && pnpm run install:server",
+    "dev:client": "cd client && pnpm run dev",
+    "dev:server": "cd server && pnpm run dev",
+    "dev": "concurrently \"pnpm:dev:client\" \"pnpm:dev:server\"",
+    "build:client": "cd client && pnpm run build",
+    "build:server": "cd server && pnpm run build",
+    "build": "pnpm run build:client && pnpm run build:server",
+    "start": "cd server && pnpm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}

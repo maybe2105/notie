@@ -1,0 +1,39 @@
+.navigator {
+  padding: 0.8rem 1rem;
+  font-family: inherit;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.link {
+  color: #8cb4ff;
+  text-decoration: none;
+  margin-right: 0.5rem;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.link:hover {
+  text-decoration: underline;
+  color: #adcfff;
+}
+
+.separator {
+  margin: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  user-select: none;
+}
+
+.currentPage {
+  color: rgba(255, 255, 255, 0.87);
+  font-weight: 600;
+}
+
+ @media (max-width: 600px) {
+  .navigator {
+    padding: 0.6rem 0.8rem;
+    font-size: 1rem;
+  }
+} 

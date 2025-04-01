@@ -1,0 +1,105 @@
+.noteContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.noteHeader {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.noteTitle {
+  margin: 0 0 0.75rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.noteMetadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.username, .lastUpdated, .updatedBy {
+  margin: 0.25rem 0;
+}
+
+.separator {
+  margin: 0 0.5rem;
+  color: #ccc;
+}
+
+.noteContent {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #444;
+}
+
+.contentLine {
+  margin-bottom: 1.2rem;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #09f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.errorMessage {
+  padding: 1.5rem;
+  background-color: #fff4f4;
+  border-left: 4px solid #f87171;
+  color: #b91c1c;
+  margin: 2rem 0;
+  border-radius: 4px;
+}
+
+.editButton {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: #4338ca;
+}
+
+.editorWrapper {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+} 

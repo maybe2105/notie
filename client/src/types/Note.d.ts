@@ -4,6 +4,7 @@ export type Note = {
   content: string;
   createdAt: string;
   updatedAt: string;
+  updatedBy: string;
 };
 
 export type NoteDTO = {
@@ -12,4 +13,5 @@ export type NoteDTO = {
   content: string;
   created_at: string;
   updated_at: string;
+  updated_by: string;
 };

@@ -15,6 +15,8 @@ export const useNote = (id: string) => {
         setNote(note);
       } catch (error) {
         setError(error instanceof Error ? error.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchNote();

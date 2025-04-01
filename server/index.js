@@ -36,7 +36,7 @@ app.post("/notes", async (req, res) => {
   const { username, content } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO notes (username, content) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO notes (username, content, updated_by) VALUES ($1, $2, $1) RETURNING *",
       [username, content]
     );
     res.status(201).json(result.rows[0]);
@@ -53,18 +53,21 @@ app.get("/notes/:id", async (req, res) => {
 
 app.put("/notes/:id", async (req, res) => {
   const { id } = req.params;
-  const { username, content } = req.body;
+  const { username, content, updatedBy } = req.body;
 
-  if (!username || !content) {
-    return res.status(400).json({ error: "Username and content are required" });
+  if (!username || !content || !updatedBy) {
+    return res
+      .status(400)
+      .json({ error: "Username, content, and updatedBy are required" });
   }
 
   const sanitizedUsername = username.replace(/[^a-zA-Z0-9\s]/g, "");
-  const sanitizedContent = content.replace(/[^a-zA-Z0-9\s]/g, "");
+  // Don't sanitize content to preserve formatting
+  const sanitizedUpdatedBy = updatedBy.replace(/[^a-zA-Z0-9\s]/g, "");
 
   const result = await pool.query(
-    "UPDATE notes SET username = $1, content = $2 WHERE id = $3",
-    [sanitizedUsername, sanitizedContent, id]
+    "UPDATE notes SET username = $1, content = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING *",
+    [sanitizedUsername, content, sanitizedUpdatedBy, id]
   );
   res.json(result.rows[0]);
 });

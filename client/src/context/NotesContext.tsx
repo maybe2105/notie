@@ -7,7 +7,10 @@ import {
 } from "react";
 import { Note } from "../types/Note";
 import { useAuth } from "./AuthContext";
-import { getNotes } from "../fetchers/note.fetcher";
+import {
+  getNotes,
+  updateNote as updateNoteAPI,
+} from "../fetchers/note.fetcher";
 
 interface NotesContextType {
   notes: Note[];
@@ -48,7 +51,14 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   };
 
   const updateNote = async (id: string, note: Note) => {
-    setNotes((prevNotes) => prevNotes.map((n) => (n.id === id ? note : n)));
+    try {
+      const updatedNote = await updateNoteAPI(id, note);
+      setNotes((prevNotes) =>
+        prevNotes.map((n) => (n.id === id ? updatedNote : n))
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update note");
+    }
   };
 
   useEffect(() => {

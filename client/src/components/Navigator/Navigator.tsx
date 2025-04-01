@@ -4,7 +4,7 @@ import styles from "./Navigator.module.css";
 import { useAuth } from "../../context/AuthContext";
 
 const Navigator: React.FC = () => {
-  const [matchNote, params] = useRoute("/:id");
+  const [matchNote, params] = useRoute("/note/:id");
 
   const { username, logout } = useAuth();
   return (

@@ -24,7 +24,11 @@ const NoteList: React.FC<NoteListProps> = ({ notes }) => {
   return (
     <div className={styles.noteListContainer}>
       {notes.map((note) => (
-        <Link key={note.id} href={`/${note.id}`} className={styles.noteLink}>
+        <Link
+          key={note.id}
+          href={`/note/${note.id}`}
+          className={styles.noteLink}
+        >
           <article className={styles.noteCard}>
             <div className={styles.noteContent}>
               <p className={styles.preview}>

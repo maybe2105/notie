@@ -22,9 +22,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [username, setUsername] = useState<string | null>(null);
 
   const login = (name: string) => {
-    if (name.trim()) {
-      setUsername(name.trim());
-      localStorage.setItem("username", name.trim());
+    const _name = name.trim();
+    if (_name) {
+      setUsername(_name);
+      localStorage.setItem("username", _name);
     }
   };
 

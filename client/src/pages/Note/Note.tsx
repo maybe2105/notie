@@ -20,10 +20,7 @@ const Note = () => {
 
   const handleContentChange = (newContent: string) => {
     if (note && username) {
-      const op = [
-        { p: ["content"], od: note.content, oi: newContent },
-        { p: ["updatedBy"], od: note.updatedBy, oi: username },
-      ];
+      const op = [{ p: ["content"], od: note.content, oi: newContent }];
       submitOp(op);
     }
   };

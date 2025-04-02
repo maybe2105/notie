@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { Note } from "../../types/Note";
-import { getNote } from "../../fetchers/note.fetcher";
 import { useAuth } from "../../context/AuthContext";
 
 import ShareDB from "sharedb/lib/client";
@@ -18,27 +17,6 @@ export const useNote = (id: string) => {
 
   useEffect(() => {
     let isMounted = true;
-    const fetchInitialNote = async () => {
-      try {
-        const initialNote = await getNote(id);
-        if (isMounted) {
-          setNote(initialNote);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "An error occurred fetching initial data"
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-    fetchInitialNote();
 
     const socket = new ReconnectingWebSocket(
       "ws://localhost:3001/notes/" + id,
@@ -75,19 +53,31 @@ export const useNote = (id: string) => {
         return;
       }
 
-      if (!doc.type) {
+      if (doc.type && isMounted) {
+        // Document exists, set note from doc data
+        setNote(doc.data as Note);
+        setIsLoading(false);
+        console.log("Received initial note data via ShareDB");
+      } else if (!doc.type) {
+        // Document doesn't exist yet
         doc.create(
           {
-            content: note?.content,
-            username: note?.username,
-            updatedBy: note?.updatedBy,
-            updatedAt: note?.updatedAt,
+            content: "",
+            username: username,
+            updatedBy: username,
+            updatedAt: new Date().toISOString(),
           },
           (error) => {
-            if (error) console.error(error);
-            else {
-              setNote(doc.data as Note);
-              setIsLoading(false);
+            if (error) {
+              console.error(error);
+              if (isMounted) {
+                setError("Failed to create document");
+              }
+            } else {
+              if (isMounted) {
+                setNote(doc.data as Note);
+                setIsLoading(false);
+              }
             }
           }
         );
@@ -99,9 +89,18 @@ export const useNote = (id: string) => {
     // Listen for changes (operations) on the document
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     doc.on("op", (op: any, source: boolean) => {
-      console.log("Received op:", op, "Source:", source);
       if (!source && isMounted) {
-        setNote(doc.data as Note);
+        const oldContent = op[0].od;
+        const newContent = op[0].oi;
+
+        if (oldContent !== newContent) {
+          setNote((prev: Note | null) => {
+            return {
+              ...prev,
+              content: newContent,
+            };
+          });
+        }
       }
     });
 
@@ -120,7 +119,7 @@ export const useNote = (id: string) => {
       connection.close();
       docRef.current = null;
     };
-  }, [id]);
+  }, [id, username]);
 
   useEffect(() => {
     let isMounted = true;

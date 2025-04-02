@@ -46,7 +46,7 @@ const Note = () => {
     <div className={styles.noteContainer}>
       <div className={styles.noteHeader}>
         <div className={styles.noteInfo}>
-          <h1 className={styles.noteTitle}>Note #{note.id}</h1>
+          <h1 className={styles.noteTitle}>Note #{id}</h1>
           <div className={styles.noteMetadata}>
             <span className={styles.username}>Created by: {note.username}</span>
             <span className={styles.separator}>•</span>
@@ -54,9 +54,6 @@ const Note = () => {
               Last updated: {formatDate(note.updatedAt)}
             </span>
             <span className={styles.separator}>•</span>
-            <span className={styles.updatedBy}>
-              Updated by: {note.updatedBy || note.username}
-            </span>
           </div>
         </div>
         <div className={styles.headerRight}>

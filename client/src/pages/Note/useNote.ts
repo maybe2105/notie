@@ -165,6 +165,8 @@ export const useNote = (id: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitOp = (op: any) => {
     if (docRef.current) {
+      console.log("🚀 ~ submitOp ~ err:", op[0]);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       docRef.current.submitOp(op, undefined, (err?: any) => {
         if (err) {

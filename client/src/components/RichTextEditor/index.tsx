@@ -290,8 +290,11 @@ export const RichTextEditor = ({
       const root = $getRoot();
       const content = root.getTextContent();
 
+      // content get double \n , so we need to remove the extra \n
+      const cleanedContent = content.replace(/\n\n/g, "\n");
+
       if (onChange) {
-        onChange(content);
+        onChange(cleanedContent);
       }
     });
   };

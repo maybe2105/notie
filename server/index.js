@@ -2,6 +2,10 @@ import express from "express";
 import cors from "cors";
 import pg from "pg";
 import dotenv from "dotenv";
+import ShareDB from "sharedb";
+import { WebSocketServer } from "ws";
+import http from "node:http";
+import WebSocketJSONStream from "@teamwork/websocket-json-stream";
 
 dotenv.config();
 
@@ -72,6 +76,20 @@ app.put("/notes/:id", async (req, res) => {
   res.json(result.rows[0]);
 });
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+const webSocketServer = new WebSocketServer({
+  server,
+});
+
+const backend = new ShareDB();
+webSocketServer.on("connection", (webSocket) => {
+  // identify the client by username
+  const username = webSocket.username;
+  const stream = new WebSocketJSONStream(webSocket);
+  backend.listen(stream);
+});
+
+server.listen(PORT, () => {
   console.log(`Server running with express on port ${PORT}`);
 });

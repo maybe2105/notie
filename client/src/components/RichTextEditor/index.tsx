@@ -17,13 +17,16 @@ import {
   LexicalNode,
   $createTextNode,
   EditorState,
+  PointType,
 } from "lexical";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { ErrorBoundary } from "react-error-boundary";
 import "./styles.css";
+import { NoteOperation } from "../../pages/Note/useNote";
 
 // Define commands for formatting
 const FORMAT_TEXT_COMMAND = createCommand("FORMAT_TEXT_COMMAND");
+const REMOTE_UPDATE_COMMAND = createCommand<string>("REMOTE_UPDATE_COMMAND");
 
 // Error fallback component
 const LexicalErrorBoundary = ({ children }: { children: React.ReactNode }) => {
@@ -224,6 +227,71 @@ const FormattingPlugin = () => {
   return null;
 };
 
+// Plugin to handle remote operations
+function RemoteOperationsPlugin({
+  operations,
+  clearOperations,
+}: {
+  operations: NoteOperation[] | null;
+  clearOperations?: () => void;
+}) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    if (!operations) return;
+
+    // Check if there's a content update operation
+    const contentOp = operations.find((op) => op.p[0] === "content");
+
+    if (contentOp && contentOp.oi !== undefined) {
+      // Dispatch the command to update content while preserving selection
+      editor.dispatchCommand(REMOTE_UPDATE_COMMAND, contentOp.oi as string);
+      // editor.update(() => {
+      //   const root = $getRoot();
+      //   root.selectEnd();
+      // });
+      clearOperations?.();
+    }
+  }, [operations, editor, clearOperations]);
+
+  // Register command handler for remote updates
+  useEffect(() => {
+    return editor.registerCommand(
+      REMOTE_UPDATE_COMMAND,
+      (newContent: string) => {
+        // Apply the update carefully to preserve cursor position
+        editor.update(() => {
+          const root = $getRoot();
+
+          // Get current text for comparison
+          const currentText = root.getTextContent();
+
+          // If they're the same, no need to update
+          if (currentText === newContent) return;
+
+          // Clear the editor
+          root.clear();
+
+          // Split content by lines and create paragraphs
+          const lines = newContent.split("\n");
+          lines.forEach((line) => {
+            const paragraph = $createParagraphNode();
+            if (line.trim()) {
+              paragraph.append($createTextNode(line));
+            }
+            root.append(paragraph);
+          });
+        });
+
+        return true;
+      },
+      COMMAND_PRIORITY_NORMAL
+    );
+  }, [editor]);
+
+  return null;
+}
+
 // Initial configuration for Lexical editor
 const initialConfig = {
   namespace: "RichTextEditor",
@@ -249,9 +317,10 @@ const initialConfig = {
 // Plugin to initialize the editor with content
 function InitialContentPlugin({ initialContent }: { initialContent: string }) {
   const [editor] = useLexicalComposerContext();
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!initialContent) return;
+    if (!initialContent || initialized) return;
 
     editor.update(() => {
       const root = $getRoot();
@@ -269,7 +338,9 @@ function InitialContentPlugin({ initialContent }: { initialContent: string }) {
         root.append(paragraph);
       });
     });
-  }, [editor, initialContent]);
+
+    setInitialized(true);
+  }, [editor, initialContent, initialized]);
 
   return null;
 }
@@ -277,12 +348,16 @@ function InitialContentPlugin({ initialContent }: { initialContent: string }) {
 interface RichTextEditorProps {
   initialContent?: string;
   onChange?: (content: string) => void;
+  remoteOperations?: NoteOperation[] | null;
+  clearOperations?: () => void;
 }
 
 // Main RichTextEditor component
 export const RichTextEditor = ({
   initialContent = "",
   onChange,
+  clearOperations,
+  remoteOperations,
 }: RichTextEditorProps) => {
   // Handler for editor changes
   const handleEditorChange = (_: EditorState, editor: LexicalEditor) => {
@@ -317,6 +392,10 @@ export const RichTextEditor = ({
           <ListPlugin />
           <FormattingPlugin />
           <InitialContentPlugin initialContent={initialContent} />
+          <RemoteOperationsPlugin
+            operations={remoteOperations}
+            clearOperations={clearOperations}
+          />
           {onChange && <OnChangePlugin onChange={handleEditorChange} />}
         </div>
       </LexicalComposer>

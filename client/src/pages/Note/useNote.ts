@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Note } from "../../types/Note";
 import { useAuth } from "../../context/AuthContext";
 
@@ -6,11 +6,20 @@ import ShareDB from "sharedb/lib/client";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { Doc } from "sharedb/lib/client";
 
+export type NoteOperation = {
+  p: string[];
+  oi?: string | Record<string, unknown>;
+  od?: string | Record<string, unknown>;
+};
+
 export const useNote = (id: string) => {
   const [note, setNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
+  const [lastOperation, setLastOperation] = useState<NoteOperation[] | null>(
+    null
+  );
   const docRef = useRef<Doc | null>(null);
   const presenceSocketRef = useRef<WebSocket | null>(null);
   const { username } = useAuth();
@@ -58,49 +67,47 @@ export const useNote = (id: string) => {
         setNote(doc.data as Note);
         setIsLoading(false);
         console.log("Received initial note data via ShareDB");
-      } else if (!doc.type) {
-        // Document doesn't exist yet
-        doc.create(
-          {
-            content: "",
-            username: username,
-            updatedBy: username,
-            updatedAt: new Date().toISOString(),
-          },
-          (error) => {
-            if (error) {
-              console.error(error);
-              if (isMounted) {
-                setError("Failed to create document");
-              }
-            } else {
-              if (isMounted) {
-                setNote(doc.data as Note);
-                setIsLoading(false);
-              }
-            }
-          }
-        );
       }
-
       console.log("Subscribed to ShareDB document:", doc.id);
     });
 
     // Listen for changes (operations) on the document
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    doc.on("op", (op: any, source: boolean) => {
-      if (!source && isMounted) {
-        const oldContent = op[0].od;
-        const newContent = op[0].oi;
+    doc.on("op", (op: Array<NoteOperation>, source: boolean) => {
+      console.log("🚀 ~ doc.on ~ op:", op, source);
 
-        if (oldContent !== newContent) {
-          setNote((prev: Note | null) => {
-            return {
-              ...prev,
-              content: newContent,
-            };
-          });
+      if (!source && isMounted) {
+        const lastContentOp = op.find((opItem) => opItem.p[0] === "content");
+        if (lastContentOp) {
+          setLastOperation([lastContentOp]);
         }
+
+        // For operations from other users, signal the operation
+
+        // Also update our state model (but don't cause complete re-renders of content)
+      }
+      const newNoteData: Partial<Note> = {};
+
+      // Find operation by path in the operation array
+      op.forEach((opItem) => {
+        if (opItem.p && opItem.p.length > 0) {
+          const field = opItem.p[0];
+          // For non-content fields, update them in our state
+          if (field === "updated_by" && opItem.oi !== undefined) {
+            newNoteData.updatedBy = opItem.oi as string;
+          } else if (field === "updated_at" && opItem.oi !== undefined) {
+            newNoteData.updatedAt = opItem.oi as string;
+          } else if (field === "content" && opItem.oi !== undefined) {
+            newNoteData.content = opItem.oi as string;
+          }
+          // We'll handle content updates separately in the editor component
+        }
+      });
+      console.log("🚀 ~ op.forEach ~ newNoteData:", newNoteData);
+      if (Object.keys(newNoteData).length > 0) {
+        setNote((prev) => {
+          if (!prev) return prev;
+          return { ...prev, ...newNoteData };
+        });
       }
     });
 
@@ -165,9 +172,14 @@ export const useNote = (id: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitOp = (op: any) => {
     if (docRef.current) {
-      console.log("🚀 ~ submitOp ~ err:", op[0]);
-
+      const contentOp = op.find(
+        (item: NoteOperation) => item.p[0] === "content"
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (contentOp && contentOp.oi === contentOp.od) {
+        // set it locally
+        return;
+      }
       docRef.current.submitOp(op, undefined, (err?: any) => {
         if (err) {
           console.error("Error submitting op:", err);
@@ -177,5 +189,17 @@ export const useNote = (id: string) => {
     }
   };
 
-  return { note, isLoading, error, submitOp, activeUsers };
+  const clearOperations = useCallback(() => {
+    setLastOperation(null);
+  }, []);
+
+  return {
+    note,
+    isLoading,
+    error,
+    submitOp,
+    activeUsers,
+    lastOperation,
+    clearOperations,
+  };
 };

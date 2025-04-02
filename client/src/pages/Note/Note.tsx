@@ -5,8 +5,16 @@ import RichTextEditor from "../../components/RichTextEditor";
 import { useAuth } from "../../context/AuthContext";
 
 const Note = () => {
-  const { id } = useParams();
-  const { note, isLoading, error, submitOp, activeUsers } = useNote(id!);
+  const { id } = useParams<{ id: string }>();
+  const {
+    note,
+    isLoading,
+    error,
+    submitOp,
+    activeUsers,
+    lastOperation,
+    clearOperations,
+  } = useNote(id!);
   const { username } = useAuth();
 
   const formatDate = (dateString: string) => {
@@ -20,7 +28,12 @@ const Note = () => {
 
   const handleContentChange = (newContent: string) => {
     if (note && username) {
-      const op = [{ p: ["content"], od: note.content, oi: newContent }];
+      const now = new Date().toISOString();
+      const op = [
+        { p: ["content"], od: note.content, oi: newContent },
+        { p: ["updated_by"], od: note.updatedBy, oi: username },
+        { p: ["updated_at"], od: note.updatedAt, oi: now },
+      ];
       submitOp(op);
     }
   };
@@ -54,6 +67,9 @@ const Note = () => {
               Last updated: {formatDate(note.updatedAt)}
             </span>
             <span className={styles.separator}>•</span>
+            <span className={styles.updatedBy}>
+              Updated by: {note.updatedBy}
+            </span>
           </div>
         </div>
         <div className={styles.headerRight}>
@@ -77,6 +93,8 @@ const Note = () => {
         <RichTextEditor
           initialContent={note.content}
           onChange={handleContentChange}
+          remoteOperations={lastOperation}
+          clearOperations={clearOperations}
         />
       </div>
     </div>

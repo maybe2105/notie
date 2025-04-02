@@ -212,8 +212,8 @@ shareDBServer.on("connection", async (webSocket, req) => {
             {
               content: noteData.content,
               username: noteData.username,
-              updatedBy: noteData.updated_by,
-              updatedAt: noteData.updated_at.toISOString(),
+              updated_by: noteData.updated_by,
+              updated_at: noteData.updated_at.toISOString(),
             },
             (createErr) => {
               if (createErr) {
@@ -237,8 +237,8 @@ shareDBServer.on("connection", async (webSocket, req) => {
             {
               content: "",
               username: "Unknown", // Or derive from request if possible
-              updatedBy: "System",
-              updatedAt: new Date().toISOString(),
+              updated_by: "System",
+              updated_at: new Date().toISOString(),
             },
             (createErr) => {
               if (createErr) {

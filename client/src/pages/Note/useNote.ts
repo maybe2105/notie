@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Note } from "../../types/Note";
 import { getNote } from "../../fetchers/note.fetcher";
+import { useAuth } from "../../context/AuthContext";
 
 import ShareDB from "sharedb/lib/client";
 import ReconnectingWebSocket from "reconnecting-websocket";
@@ -10,7 +11,10 @@ export const useNote = (id: string) => {
   const [note, setNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
   const docRef = useRef<Doc | null>(null);
+  const presenceSocketRef = useRef<WebSocket | null>(null);
+  const { username } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -51,11 +55,11 @@ export const useNote = (id: string) => {
     docRef.current = doc;
 
     socket.onopen = () => {
-      console.log("WebSocket connection opened");
+      console.log("ShareDB WebSocket connection opened");
     };
 
     socket.onerror = (event) => {
-      console.error("WebSocket error:", event);
+      console.error("ShareDB WebSocket error:", event);
       if (isMounted) {
         setError("WebSocket connection error");
       }
@@ -118,11 +122,50 @@ export const useNote = (id: string) => {
     };
   }, [id]);
 
-  // Function to submit local changes (operations) to ShareDB
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!username) return;
+
+    const url = new URL(`ws://localhost:3001/presence/${id}`);
+    url.searchParams.append("username", username);
+
+    // Create WebSocket connection for presence
+    const presenceSocket = new WebSocket(url.toString());
+    presenceSocketRef.current = presenceSocket;
+
+    presenceSocket.onopen = () => {
+      console.log("Presence WebSocket connection opened");
+    };
+
+    presenceSocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "presence" && isMounted) {
+          setActiveUsers(data.users);
+        }
+      } catch (err) {
+        console.error("Error parsing presence message:", err);
+      }
+    };
+
+    presenceSocket.onerror = (event) => {
+      console.error("Presence WebSocket error:", event);
+    };
+
+    // Clean up the presence connection on unmount
+    return () => {
+      isMounted = false;
+      if (presenceSocketRef.current) {
+        presenceSocketRef.current.close();
+        presenceSocketRef.current = null;
+      }
+    };
+  }, [id, username]);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitOp = (op: any) => {
     if (docRef.current) {
-      // Pass undefined for options argument before the callback
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       docRef.current.submitOp(op, undefined, (err?: any) => {
         if (err) {
@@ -133,5 +176,5 @@ export const useNote = (id: string) => {
     }
   };
 
-  return { note, isLoading, error, submitOp };
+  return { note, isLoading, error, submitOp, activeUsers };
 };

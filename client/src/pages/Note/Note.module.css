@@ -40,6 +40,33 @@
   color: #ccc;
 }
 
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.activeUsers {
+  font-size: 0.85rem;
+  color: #4f46e5;
+  background-color: #eef2ff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.usersList {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.activeUser {
+  font-weight: 500;
+}
+
 .noteContent {
   font-size: 1.1rem;
   line-height: 1.7;

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams } from "wouter";
 import { useNote } from "./useNote";
 import styles from "./Note.module.css";
@@ -7,9 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 
 const Note = () => {
   const { id } = useParams();
-  const { note, isLoading, error, submitOp } = useNote(id!);
+  const { note, isLoading, error, submitOp, activeUsers } = useNote(id!);
   const { username } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -18,10 +16,6 @@ const Note = () => {
       day: "numeric",
       year: "numeric",
     });
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
   };
 
   const handleContentChange = (newContent: string) => {
@@ -68,27 +62,29 @@ const Note = () => {
             </span>
           </div>
         </div>
-        <button onClick={handleEditToggle} className={styles.editButton}>
-          {isEditing ? "View" : "Edit"}
-        </button>
+        <div className={styles.headerRight}>
+          {activeUsers.length > 0 && (
+            <div className={styles.activeUsers}>
+              <div className={styles.usersList}>
+                Currently editing:{" "}
+                {activeUsers.map((user, index) => (
+                  <span key={user} className={styles.activeUser}>
+                    {user}
+                    {index < activeUsers.length - 1 && ", "}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      {isEditing ? (
-        <div className={styles.editorWrapper}>
-          <RichTextEditor
-            initialContent={note.content}
-            onChange={handleContentChange}
-          />
-        </div>
-      ) : (
-        <div className={styles.noteContent}>
-          {note.content.split("\n").map((line, index) => (
-            <p key={index} className={styles.contentLine}>
-              {line || <br />}
-            </p>
-          ))}
-        </div>
-      )}
+      <div className={styles.editorWrapper}>
+        <RichTextEditor
+          initialContent={note.content}
+          onChange={handleContentChange}
+        />
+      </div>
     </div>
   );
 };

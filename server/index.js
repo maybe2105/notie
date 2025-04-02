@@ -26,6 +26,9 @@ const pool = new pg.Pool(poolOptions);
 app.use(cors());
 app.use(express.json());
 
+// Track active users by note ID
+const activeUsers = new Map();
+
 // Routes
 app.get("/notes", async (req, res) => {
   try {
@@ -86,49 +89,149 @@ app.put("/notes/:id", async (req, res) => {
 
 const server = http.createServer(app);
 
-const webSocketServer = new WebSocketServer({
+// Initialize ShareDB WebSocket server
+const shareDBServer = new WebSocketServer({
+  noServer: true,
+});
+
+// Initialize separate presence WebSocket server
+const presenceServer = new WebSocketServer({
   noServer: true,
 });
 
 // Initialize ShareDB without the Postgres adapter
 const backend = new ShareDB();
 
-// Handle WebSocket upgrades
-server.on("upgrade", (request, socket, head) => {
-  // Check the path for the note ID
-  const pathname = new URL(request.url, `http://${request.headers.host}`)
-    .pathname;
-  const match = pathname.match(/^\/notes\/([a-zA-Z0-9_-]+)$/);
+// Broadcast active users for a specific note
+const broadcastActiveUsers = (noteId) => {
+  const usersInNote = activeUsers.get(noteId) || new Set();
+  const usersList = Array.from(usersInNote);
 
-  if (match) {
-    webSocketServer.handleUpgrade(request, socket, head, (ws) => {
-      webSocketServer.emit("connection", ws, request);
-    });
+  presenceServer.clients.forEach((client) => {
+    if (client.noteId === noteId && client.readyState === client.OPEN) {
+      client.send(
+        JSON.stringify({
+          type: "presence",
+          users: usersList,
+        })
+      );
+    }
+  });
+};
+
+// Handle WebSocket upgrades - route to the appropriate WebSocket server
+server.on("upgrade", (request, socket, head) => {
+  const url = new URL(request.url, `http://${request.headers.host}`);
+  const pathname = url.pathname;
+
+  // Route for ShareDB (notes editing)
+  if (pathname.startsWith("/notes/")) {
+    const match = pathname.match(/^\/notes\/([a-zA-Z0-9_-]+)$/);
+    if (match) {
+      shareDBServer.handleUpgrade(request, socket, head, (ws) => {
+        shareDBServer.emit("connection", ws, request);
+      });
+    } else {
+      console.log("Rejecting WebSocket connection for path:", pathname);
+      socket.destroy();
+    }
+  }
+  // Route for presence tracking
+  else if (pathname.startsWith("/presence/")) {
+    const match = pathname.match(/^\/presence\/([a-zA-Z0-9_-]+)$/);
+    if (match) {
+      presenceServer.handleUpgrade(request, socket, head, (ws) => {
+        const noteId = match[1];
+        const username = url.searchParams.get("username");
+
+        // Store noteId and username on the WebSocket for later reference
+        ws.noteId = noteId;
+        ws.username = username;
+
+        presenceServer.emit("connection", ws, request);
+      });
+    } else {
+      console.log("Rejecting WebSocket connection for path:", pathname);
+      socket.destroy();
+    }
   } else {
-    // Handle other WebSocket connections or reject
-    console.log("Rejecting WebSocket connection for path:", pathname);
+    console.log("Unknown WebSocket path:", pathname);
     socket.destroy();
   }
 });
 
-webSocketServer.on("connection", (webSocket, req) => {
-  // Create a stream for the WebSocket connection
+// Handle ShareDB connections
+shareDBServer.on("connection", (webSocket, req) => {
+  // Create a stream for ShareDB
   const stream = new WebSocketJSONStream(webSocket);
-  // Listen for messages from the client and pass them to ShareDB
   backend.listen(stream);
 
-  // Optional: You can handle disconnection or errors here
   webSocket.on("close", () => {
-    console.log("WebSocket connection closed");
-    // Perform any cleanup if needed
+    console.log("ShareDB WebSocket connection closed");
   });
 
   webSocket.on("error", (error) => {
-    console.error("WebSocket error:", error);
-    // Handle errors
+    console.error("ShareDB WebSocket error:", error);
   });
 
-  console.log("WebSocket connection established for", req.url);
+  console.log("ShareDB WebSocket connection established for", req.url);
+});
+
+// Handle presence connections
+presenceServer.on("connection", (webSocket, req) => {
+  const { noteId, username } = webSocket;
+
+  if (noteId && username) {
+    // Add user to active users for this note
+    if (!activeUsers.has(noteId)) {
+      activeUsers.set(noteId, new Set());
+    }
+    activeUsers.get(noteId).add(username);
+
+    // Broadcast updated list of active users
+    broadcastActiveUsers(noteId);
+
+    console.log(`User ${username} joined note ${noteId}`);
+  }
+
+  // Handle client messages (not needed for now, but could be used for custom events)
+  webSocket.on("message", (message) => {
+    try {
+      const data = JSON.parse(message.toString());
+      console.log("Received presence message:", data);
+    } catch (err) {
+      console.error("Invalid JSON in presence message");
+    }
+  });
+
+  // Handle disconnection
+  webSocket.on("close", () => {
+    const { noteId, username } = webSocket;
+
+    if (noteId && username && activeUsers.has(noteId)) {
+      activeUsers.get(noteId).delete(username);
+
+      if (activeUsers.get(noteId).size === 0) {
+        activeUsers.delete(noteId);
+      } else {
+        broadcastActiveUsers(noteId);
+      }
+
+      console.log(`User ${username} left note ${noteId}`);
+    }
+
+    console.log("Presence WebSocket connection closed");
+  });
+
+  webSocket.on("error", (error) => {
+    console.error("Presence WebSocket error:", error);
+  });
+
+  console.log(
+    `Presence WebSocket connection established for ${req.url} by ${
+      username || "anonymous"
+    }`
+  );
 });
 
 server.listen(PORT, () => {

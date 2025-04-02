@@ -92,9 +92,7 @@ export const useNote = (id: string) => {
         if (opItem.p && opItem.p.length > 0) {
           const field = opItem.p[0];
           // For non-content fields, update them in our state
-          if (field === "updated_by" && opItem.oi !== undefined) {
-            newNoteData.updatedBy = opItem.oi as string;
-          } else if (field === "updated_at" && opItem.oi !== undefined) {
+          if (field === "updated_at" && opItem.oi !== undefined) {
             newNoteData.updatedAt = opItem.oi as string;
           } else if (field === "content" && opItem.oi !== undefined) {
             newNoteData.content = opItem.oi as string;
@@ -102,7 +100,6 @@ export const useNote = (id: string) => {
           // We'll handle content updates separately in the editor component
         }
       });
-      console.log("🚀 ~ op.forEach ~ newNoteData:", newNoteData);
       if (Object.keys(newNoteData).length > 0) {
         setNote((prev) => {
           if (!prev) return prev;

@@ -66,10 +66,6 @@ const Note = () => {
             <span className={styles.lastUpdated}>
               Last updated: {formatDate(note.updatedAt)}
             </span>
-            <span className={styles.separator}>•</span>
-            <span className={styles.updatedBy}>
-              Updated by: {note.updatedBy}
-            </span>
           </div>
         </div>
         <div className={styles.headerRight}>

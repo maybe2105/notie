@@ -26,6 +26,9 @@ importers:
       sharedb:
         specifier: ^5.2.1
         version: 5.2.1
+      sharedb-postgres:
+        specifier: ^5.0.1
+        version: 5.0.1
 
 packages:
 
@@ -336,6 +339,9 @@ packages:
 
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
+
+  sharedb-postgres@5.0.1:
+    resolution: {integrity: sha512-q5dTl+VbzsBDsvAtSa/XcLFls4j6o8sm5ritHLvlhPwvZZvVDhOD0RIgF8vc+f7JPR1h3JcUG/OTe0PpQmAB7g==}
 
   sharedb@5.2.1:
     resolution: {integrity: sha512-CAZhU7Y9kR9LreuCkN9BIy9Y5u8e5suGTLSSFjXi6SiGhNuWPnVUZfZOKVnu03FYADs2lLhcj3vaa6kEcd2pxQ==}
@@ -712,6 +718,13 @@ snapshots:
       - supports-color
 
   setprototypeof@1.2.0: {}
+
+  sharedb-postgres@5.0.1:
+    dependencies:
+      pg: 8.14.1
+      sharedb: 5.2.1
+    transitivePeerDependencies:
+      - pg-native
 
   sharedb@5.2.1:
     dependencies:

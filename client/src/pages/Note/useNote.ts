@@ -1,35 +1,40 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Note } from "../../types/Note";
 import { getNote } from "../../fetchers/note.fetcher";
 
 import ShareDB from "sharedb/lib/client";
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { Doc } from "sharedb/lib/client";
 
 export const useNote = (id: string) => {
   const [note, setNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [socket, setSocket] = useState<ReconnectingWebSocket | null>(null);
-
-  const updateNote = async (note: Note) => {
-    if (!socket) return;
-    socket.send(JSON.stringify(note));
-  };
+  const docRef = useRef<Doc | null>(null);
 
   useEffect(() => {
-    const fetchNote = async () => {
+    let isMounted = true;
+    const fetchInitialNote = async () => {
       try {
-        const note = await getNote(id);
-        setNote(note);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "An error occurred");
+        const initialNote = await getNote(id);
+        if (isMounted) {
+          setNote(initialNote);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "An error occurred fetching initial data"
+          );
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
-    fetchNote();
+    fetchInitialNote();
 
     const socket = new ReconnectingWebSocket(
       "ws://localhost:3001/notes/" + id,
@@ -39,36 +44,94 @@ export const useNote = (id: string) => {
       }
     );
 
-    setSocket(socket);
-
-    const connection = new ShareDB.Connection(socket);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const connection = new ShareDB.Connection(socket as any);
 
     const doc = connection.get("notes", id);
+    docRef.current = doc;
 
-    // log on connection
     socket.onopen = () => {
       console.log("WebSocket connection opened");
     };
 
-    doc.subscribe((error) => {
-      if (error) return console.error(error);
+    socket.onerror = (event) => {
+      console.error("WebSocket error:", event);
+      if (isMounted) {
+        setError("WebSocket connection error");
+      }
+    };
 
-      // If doc.type is undefined, the document has not been created, so let's create it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    doc.subscribe((err?: any) => {
+      if (err) {
+        console.error("ShareDB subscription error:", err);
+        if (isMounted) {
+          setError("Failed to subscribe to document changes");
+        }
+        return;
+      }
+
       if (!doc.type) {
-        doc.create({ counter: 0 }, (error) => {
-          if (error) console.error(error);
-        });
+        doc.create(
+          {
+            content: note?.content,
+            username: note?.username,
+            updatedBy: note?.updatedBy,
+            updatedAt: note?.updatedAt,
+          },
+          (error) => {
+            if (error) console.error(error);
+            else {
+              setNote(doc.data as Note);
+              setIsLoading(false);
+            }
+          }
+        );
+      }
+
+      console.log("Subscribed to ShareDB document:", doc.id);
+    });
+
+    // Listen for changes (operations) on the document
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    doc.on("op", (op: any, source: boolean) => {
+      console.log("Received op:", op, "Source:", source);
+      if (!source && isMounted) {
+        setNote(doc.data as Note);
       }
     });
 
-    doc.on("op", (op) => {
-      console.log("op", op);
+    // Handle errors from the document
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    doc.on("error", (err: any) => {
+      console.error("ShareDB document error:", err);
+      if (isMounted) {
+        setError("Document error: " + err.message);
+      }
     });
 
     return () => {
+      isMounted = false;
+      console.log("Closing ShareDB connection");
       connection.close();
+      docRef.current = null;
     };
   }, [id]);
 
-  return { note, isLoading, error, updateNote };
+  // Function to submit local changes (operations) to ShareDB
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const submitOp = (op: any) => {
+    if (docRef.current) {
+      // Pass undefined for options argument before the callback
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      docRef.current.submitOp(op, undefined, (err?: any) => {
+        if (err) {
+          console.error("Error submitting op:", err);
+          setError("Failed to submit changes: " + err.message);
+        }
+      });
+    }
+  };
+
+  return { note, isLoading, error, submitOp };
 };

@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const Note = () => {
   const { id } = useParams();
-  const { note, isLoading, error, updateNote } = useNote(id!);
+  const { note, isLoading, error, submitOp } = useNote(id!);
   const { username } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -24,14 +24,13 @@ const Note = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleContentChange = (content: string) => {
-    if (note) {
-      const updatedNote = {
-        ...note,
-        content,
-        updatedBy: username!,
-      };
-      updateNote(updatedNote);
+  const handleContentChange = (newContent: string) => {
+    if (note && username) {
+      const op = [
+        { p: ["content"], od: note.content, oi: newContent },
+        { p: ["updatedBy"], od: note.updatedBy, oi: username },
+      ];
+      submitOp(op);
     }
   };
 

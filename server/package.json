@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.17.1",
+    "nodemon": "^3.1.9",
     "pg": "^8.11.3",
     "sharedb": "^5.2.1",
     "sharedb-postgres": "^5.0.1"

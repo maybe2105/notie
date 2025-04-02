@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import ShareDB from "sharedb";
 import { WebSocketServer } from "ws";
 import http from "node:http";
+import SharedbPostgres from "sharedb-postgres";
 import WebSocketJSONStream from "@teamwork/websocket-json-stream";
 
 dotenv.config();
@@ -100,7 +101,15 @@ const presenceServer = new WebSocketServer({
 });
 
 // Initialize ShareDB without the Postgres adapter
-const backend = new ShareDB();
+const sharedbPostgres = SharedbPostgres({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+const backend = new ShareDB({ db: sharedbPostgres });
 
 // Broadcast active users for a specific note
 const broadcastActiveUsers = (noteId) => {

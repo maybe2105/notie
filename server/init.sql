@@ -32,3 +32,24 @@ Need to start with Atomic Habits first!', 'Alice'),
             ('Eve', 'Start learning React Native', 'Eve');
     END IF;
 END $$; 
+
+-- ShareDB tables with latest schema (v5.0.0)
+CREATE TABLE IF NOT EXISTS ops (
+  collection character varying(255) not null,
+  doc_id character varying(255) not null,
+  version integer not null,
+  operation jsonb not null, -- {v:0, create:{...}} or {v:n, op:[...]}
+  PRIMARY KEY (collection, doc_id, version)
+);
+
+CREATE TABLE IF NOT EXISTS snapshots (
+  collection character varying(255) not null,
+  doc_id character varying(255) not null,
+  doc_type character varying(255),
+  version integer not null,
+  data jsonb,
+  metadata jsonb,
+  PRIMARY KEY (collection, doc_id)
+);
+
+CREATE INDEX IF NOT EXISTS snapshots_version ON snapshots (collection, doc_id); 

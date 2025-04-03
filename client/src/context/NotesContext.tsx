@@ -9,9 +9,10 @@ import { Note } from "../types/Note";
 import { useAuth } from "./AuthContext";
 import {
   getNotes,
-  updateNote as updateNoteAPI,
   createNote as createNoteAPI,
+  deleteNote as deleteNoteAPI,
 } from "../fetchers/note.fetcher";
+import { toast } from "react-fox-toast";
 
 interface NotesContextType {
   notes: Note[];
@@ -56,6 +57,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       }
       const newNote = await createNoteAPI(username, content);
       setNotes((prevNotes) => [newNote, ...prevNotes]);
+      toast.success(`Note created successfully`);
       return newNote;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create note");
@@ -64,17 +66,13 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   };
 
   const removeNote = async (id: string) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-  };
-
-  const updateNote = async (id: string, note: Note) => {
     try {
-      const updatedNote = await updateNoteAPI(id, note);
-      setNotes((prevNotes) =>
-        prevNotes.map((n) => (n.id === id ? updatedNote : n))
-      );
+      await deleteNoteAPI(id);
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+      toast.success(`Note ${id} deleted successfully`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update note");
+      setError(err instanceof Error ? err.message : "Failed to delete note");
+      throw err;
     }
   };
 
@@ -94,7 +92,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         addnewNote,
         createNote,
         removeNote,
-        updateNote,
       }}
     >
       {children}

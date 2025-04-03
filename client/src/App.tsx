@@ -1,28 +1,32 @@
 import { Route, Switch, Redirect } from "wouter";
-import Home from "./pages/Home";
-import Note from "./pages/Note";
+import { ToastContainer } from "react-fox-toast";
+
 import Navigator from "./components/Navigator";
 import styles from "./App.module.css";
 import { useAuth } from "./context/AuthContext";
 import { NotesProvider } from "./context/NotesContext";
-import Login from "./pages/Login";
 import "./index.css";
+import { lazy } from "react";
+
+const Home = lazy(() => import("./pages/Home"));
+const Note = lazy(() => import("./pages/Note"));
+const Login = lazy(() => import("./pages/Login"));
 
 function AppContent() {
   return (
     <NotesProvider>
-      <div className={styles.appContainer}>
-        <Navigator />
-        <div className={styles.mainContent}>
-          <Switch>
+      <Switch>
+        <div className={styles.appContainer}>
+          <Navigator />
+          <div className={styles.mainContent}>
             <Route path={"/"} component={Home} />
             <Route path="/note/:id" component={Note} />
             <Route>
               <Redirect to="/" />
             </Route>
-          </Switch>
+          </div>
         </div>
-      </div>
+      </Switch>
     </NotesProvider>
   );
 }
@@ -30,7 +34,16 @@ function AppContent() {
 function App() {
   const { username } = useAuth();
 
-  return <>{username ? <AppContent /> : <Login />}</>;
+  if (!username) {
+    return <Login />;
+  }
+
+  return (
+    <>
+      <ToastContainer position="top-center" />
+      <AppContent />
+    </>
+  );
 }
 
 export default App;

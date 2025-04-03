@@ -47,7 +47,7 @@ export const useAutoTyping = (
 
       // Send this operation to the server
       submitOp(mockOp);
-    }, 500); // Type a character every 500ms
+    }, 100); // Type a character every 100s
 
     return () => {
       if (simulationRef.current) {

@@ -13,13 +13,10 @@ export const useNote = (id: string) => {
   );
   const { username } = useAuth();
 
-  const { docRef, error: connectionError } = useShareDbConnection(id);
-  const { activeUsers } = usePresence(id, username);
-  const [error, setError] = useState<string | null>(connectionError);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (connectionError) setError(connectionError);
-  }, [connectionError]);
+  const { docRef } = useShareDbConnection(id, setError);
+  const { activeUsers } = usePresence(id, username);
 
   useEffect(() => {
     if (!docRef.current) return;

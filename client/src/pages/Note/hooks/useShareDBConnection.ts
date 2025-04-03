@@ -1,7 +1,5 @@
 import { useEffect } from "react";
 
-import { useState } from "react";
-
 import { useRef } from "react";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { Doc } from "sharedb/lib/client";
@@ -20,9 +18,11 @@ export type ShareDBError = {
 };
 
 // Separate hook for ShareDB connection
-export const useShareDbConnection = (id: string) => {
+export const useShareDbConnection = (
+  id: string,
+  setError: (error: string) => void
+) => {
   const docRef = useRef<Doc | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,5 +56,5 @@ export const useShareDbConnection = (id: string) => {
     };
   }, [id]);
 
-  return { docRef, error };
+  return { docRef };
 };

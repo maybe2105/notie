@@ -1,0 +1,18 @@
+.dialogBody {
+  margin-bottom: 1.5rem;
+}
+
+.notePreview {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-style: italic;
+}
+
+.warningText {
+  color: var(--error-color);
+  font-weight: 500;
+  margin-top: 0.5rem;
+} 

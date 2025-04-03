@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 
 import { useEffect } from "react";
-
 export const usePresence = (id: string, username: string | null) => {
   const [activeUsers, setActiveUsers] = useState<string[]>([]);
   const presenceSocketRef = useRef<WebSocket | null>(null);

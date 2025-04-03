@@ -85,3 +85,12 @@ export const updateNote = async (id: string, note: Note): Promise<Note> => {
     updatedBy: data.updated_by,
   };
 };
+
+export const deleteNote = async (id: string): Promise<void> => {
+  await fetch(`/api/notes/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};

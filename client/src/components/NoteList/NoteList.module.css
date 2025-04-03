@@ -120,6 +120,41 @@
   font-style: italic;
 }
 
+.deleteButton {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  padding: 0.5rem;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  transform: translateX(5px);
+  margin-left: 0.5rem;
+}
+
+.noteCard:hover .deleteButton {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.deleteButton:hover {
+  background-color: rgba(230, 57, 70, 0.1);
+  color: var(--danger-color);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.deleteIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .emptyState {
   grid-column: 1 / -1;
   text-align: center;
@@ -153,6 +188,11 @@
     margin-top: 1rem;
     padding-top: 0.75rem;
   }
+  
+  .deleteButton {
+    opacity: 0.8;
+    transform: translateX(0);
+  }
 }
 
 @media (max-width: 480px) {
@@ -172,5 +212,12 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+  
+  .deleteButton {
+    position: absolute;
+    top: 0.75rem;
+    right: 0;
+    opacity: 0.8;
   }
 } 

@@ -18,11 +18,11 @@ interface NotesContextType {
   notes: Note[];
   isLoading: boolean;
   error: string | null;
+  total: number;
   refreshNotes: () => Promise<void>;
   addnewNote: (note: Note) => Promise<void>;
   createNote: (content?: string) => Promise<Note>;
   removeNote: (id: string) => Promise<void>;
-  updateNote: (id: string, note: Note) => Promise<void>;
 }
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
@@ -30,6 +30,7 @@ const NotesContext = createContext<NotesContextType | undefined>(undefined);
 export function NotesProvider({ children }: { children: ReactNode }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const { username } = useAuth();
 
@@ -38,7 +39,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       const data = await getNotes();
-      setNotes(data);
+      setNotes(data.notes);
+      setTotal(data.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -91,6 +93,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         refreshNotes,
         addnewNote,
         createNote,
+        total,
         removeNote,
       }}
     >

@@ -33,10 +33,23 @@ const activeUsers = new Map();
 // Routes
 app.get("/notes", async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    // Get total count
+    const countResult = await pool.query("SELECT COUNT(*) FROM notes");
+    const total = parseInt(countResult.rows[0].count);
+
+    // Get paginated notes
     const result = await pool.query(
-      "SELECT * FROM notes ORDER BY created_at DESC"
+      "SELECT * FROM notes ORDER BY id ASC LIMIT $1 OFFSET $2",
+      [limit, offset]
     );
-    res.json(result.rows);
+
+    res.json({
+      total,
+      notes: result.rows,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

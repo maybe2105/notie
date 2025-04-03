@@ -1,10 +1,13 @@
 import { NoteDTO, Note } from "../types/Note";
 
-export const getNotes = async (): Promise<Note[]> => {
-  const response = await fetch(`/api/notes`);
+export const getNotes = async (
+  limit: number = 10,
+  offset: number = 0
+): Promise<{ notes: Note[]; total: number }> => {
+  const response = await fetch(`/api/notes?limit=${limit}&offset=${offset}`);
   const data = await response.json();
 
-  const notes = data.map((note: NoteDTO) => {
+  const notes = data.notes.map((note: NoteDTO) => {
     return {
       id: note.id,
       username: note.username,
@@ -15,7 +18,10 @@ export const getNotes = async (): Promise<Note[]> => {
     };
   });
 
-  return notes;
+  return {
+    notes,
+    total: data.total,
+  };
 };
 
 export const getNote = async (id: string): Promise<Note> => {

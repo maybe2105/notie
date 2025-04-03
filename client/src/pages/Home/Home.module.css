@@ -1,0 +1,80 @@
+.homeContainer {
+  padding: 1rem 2rem 2rem;
+}
+
+.homeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(237, 242, 251, 0.9));
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.headerLeft h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+  margin-bottom: 0.5rem;
+}
+
+.subheading {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.createButton {
+  background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 24px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(94, 96, 206, 0.2);
+}
+
+.createButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(94, 96, 206, 0.25);
+}
+
+.createButton:active {
+  transform: translateY(0);
+}
+
+.createIcon {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .homeContainer {
+    padding: 0.5rem 1rem 1.5rem;
+  }
+  
+  .homeHeader {
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .headerLeft h1 {
+    font-size: 1.5rem;
+  }
+  
+  .subheading {
+    font-size: 0.9rem;
+  }
+  
+  .createButton {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+} 

@@ -10,6 +10,7 @@ import { useAuth } from "./AuthContext";
 import {
   getNotes,
   updateNote as updateNoteAPI,
+  createNote as createNoteAPI,
 } from "../fetchers/note.fetcher";
 
 interface NotesContextType {
@@ -18,6 +19,7 @@ interface NotesContextType {
   error: string | null;
   refreshNotes: () => Promise<void>;
   addnewNote: (note: Note) => Promise<void>;
+  createNote: (content?: string) => Promise<Note>;
   removeNote: (id: string) => Promise<void>;
   updateNote: (id: string, note: Note) => Promise<void>;
 }
@@ -46,6 +48,21 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const addnewNote = async (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);
   };
+
+  const createNote = async (content: string = ""): Promise<Note> => {
+    try {
+      if (!username) {
+        throw new Error("User not authenticated");
+      }
+      const newNote = await createNoteAPI(username, content);
+      setNotes((prevNotes) => [newNote, ...prevNotes]);
+      return newNote;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create note");
+      throw err;
+    }
+  };
+
   const removeNote = async (id: string) => {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
   };
@@ -75,6 +92,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         error,
         refreshNotes,
         addnewNote,
+        createNote,
         removeNote,
         updateNote,
       }}

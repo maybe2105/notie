@@ -1,6 +1,5 @@
 import styles from "./Misc.module.css";
-import { getInitials } from "../note.utils";
-
+import { getInitials } from "../../../utils/note.utils";
 const UserAvatar = ({ username }: { username: string }) => (
   <div
     className={styles.userAvatar}

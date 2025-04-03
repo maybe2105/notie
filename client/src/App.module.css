@@ -1,12 +1,28 @@
 .appContainer {
-  background-color: #f8f9fa; 
+  background: linear-gradient(135deg, #f8f9ff 0%, #edf2fb 100%);
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(94, 96, 206, 0.02) 2%, transparent 0%), 
+    radial-gradient(circle at 75px 75px, rgba(94, 96, 206, 0.02) 2%, transparent 0%);
+  background-size: 100px 100px;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  padding-bottom: 3rem;
 }
+
 .mainContent {
-  height: calc(100% - 140px);
-  margin:auto;
-  width: 60%;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  padding: 3rem 3rem 0rem 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .appContainer {
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .appContainer {
+    padding-bottom: 1rem;
+  }
 }

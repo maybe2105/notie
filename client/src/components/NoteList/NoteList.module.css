@@ -1,8 +1,10 @@
 .noteListContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 1rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .noteWrapper {
@@ -12,41 +14,41 @@
 .noteLink {
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease-in-out;
   display: block;
-}
-
-.noteWrapper:hover .noteLink {
-  transform: translateY(-4px);
+  transition: all 0.3s ease;
 }
 
 .noteCard {
-  background: #fff9c4;
-  border-radius: 12px;
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  height: 220px;
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.75rem;
+  height: 230px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
   background-image: 
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.3) 0px,
-      transparent 1px
-    ),
-    linear-gradient(
-      rgba(255, 255, 255, 0.3) 0px,
-      transparent 1px
-    );
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
   background-size: 20px 20px;
+  background-position: -1px -1px;
 }
 
+/* Folded corner effect */
+.noteCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-width: 0 20px 20px 0;
+  border-style: solid;
+  border-color: #e4e7ef var(--background-color);
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
 
 .noteCard::before {
   content: '';
@@ -54,28 +56,47 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(to right, #ffd54f, #ffb300);
-  opacity: 0.5;
+  height: 3px;
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+  opacity: 0.8;
 }
 
 .noteCard:hover {
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.07),
-    0 2px 4px rgba(0, 0, 0, 0.12);
-  background-color: #fff7b0;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: rgba(94, 96, 206, 0.2);
+}
+
+.noteCard:hover::after {
+  border-width: 0 25px 25px 0;
+  border-color: #d8dbe9 var(--background-color);
 }
 
 .noteContent {
   flex: 1;
   overflow: hidden;
+  position: relative;
+}
+
+/* Subtle paper slash effect at the bottom */
+.noteContent::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -20px;
+  right: -20px;
+  height: 30px;
+  background: var(--background-color);
+  transform: rotate(-1deg);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.03);
+  z-index: 1;
 }
 
 .preview {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.6;
-  color: #5d4037;
+  color: var(--text-color);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 6;
@@ -84,61 +105,53 @@
 
 .noteFooter {
   margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .date {
-  font-size: 0.8125rem;
-  color: #795548;
-}
-
-.owner {
-  font-size: 0.8125rem;
-  color: #795548;
+  font-size: 0.85rem;
+  color: var(--text-light);
   font-style: italic;
 }
 
 .emptyState {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 4rem 2rem;
-  background: #fff9c4;
-  border-radius: 12px;
-  border: 2px dashed #ffd54f;
+  padding: 5rem 2rem;
+  background: linear-gradient(120deg, var(--primary-light), #f0f4fd);
+  border-radius: var(--border-radius);
+  border: 2px dashed rgba(94, 96, 206, 0.15);
+  box-shadow: var(--shadow-sm);
 }
 
 .emptyState p {
-  color: #795548;
-  font-size: 1.1rem;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  font-weight: 500;
   margin: 0;
 }
 
 @media (max-width: 768px) {
   .noteListContainer {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    padding: 1.5rem;
   }
 
   .noteCard {
-    height: 200px;
-    padding: 1.25rem;
+    height: 210px;
+    padding: 1.5rem;
   }
 
   .noteFooter {
     margin-top: 1rem;
     padding-top: 0.75rem;
-  }
-
-  .shareButton {
-    opacity: 1;
-    transform: translateY(0);
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 1);
   }
 }
 
@@ -146,19 +159,18 @@
   .noteListContainer {
     grid-template-columns: 1fr;
     gap: 1rem;
+    padding: 1rem;
   }
 
   .noteCard {
-    height: 180px;
-    padding: 1rem;
+    height: auto;
+    min-height: 180px;
+    padding: 1.25rem;
   }
 
   .noteFooter {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
-  }
-  .preview {
-    line-height: 1.4;
   }
 } 

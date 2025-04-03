@@ -2,25 +2,13 @@ import React from "react";
 import { Link } from "wouter";
 import { Note } from "../../types/Note";
 import styles from "./NoteList.module.css";
+import { formatDate, getPreviewContent } from "../../utils/note.utils";
 
 interface NoteListProps {
   notes: Note[];
 }
 
 const NoteList: React.FC<NoteListProps> = ({ notes }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const getPreviewContent = (content: string) => {
-    return content.length > 150 ? content.substring(0, 150) + "..." : content;
-  };
-
   return (
     <div className={styles.noteListContainer}>
       {notes.map((note) => (

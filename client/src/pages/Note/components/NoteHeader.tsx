@@ -1,8 +1,7 @@
-import { formatDate } from "../note.utils";
 import UserAvatars from "./UserAvatars";
 import styles from "../Note.module.css";
 import { Note as NoteType } from "../../../types/Note";
-
+import { formatDate } from "../../../utils/note.utils";
 interface NoteHeaderProps {
   id: string;
   note: NoteType;

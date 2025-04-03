@@ -1,0 +1,32 @@
+
+.inputGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .inputLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+  
+  .textInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background-color: white;
+  }
+  
+  .textInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(94, 96, 206, 0.1);
+  }
+  
+  .textInputContainer {
+    display: flex;
+  }
+  

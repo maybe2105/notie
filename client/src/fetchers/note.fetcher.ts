@@ -34,6 +34,33 @@ export const getNote = async (id: string): Promise<Note> => {
   return note;
 };
 
+export const createNote = async (
+  username: string,
+  content: string = ""
+): Promise<Note> => {
+  const response = await fetch(`/api/notes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      content,
+    }),
+  });
+
+  const data = await response.json();
+
+  return {
+    id: data.id,
+    username: data.username,
+    content: data.content,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    updatedBy: data.updated_by,
+  };
+};
+
 export const updateNote = async (id: string, note: Note): Promise<Note> => {
   const response = await fetch(`/api/notes/${id}`, {
     method: "PUT",

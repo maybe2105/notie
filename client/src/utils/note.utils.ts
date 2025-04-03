@@ -10,3 +10,7 @@ export const formatDate = (dateString: string) => {
 export const getInitials = (username: string) => {
   return username.substring(0, 2).toUpperCase();
 };
+
+export const getPreviewContent = (content: string) => {
+  return content.length > 150 ? content.substring(0, 150) + "..." : content;
+};

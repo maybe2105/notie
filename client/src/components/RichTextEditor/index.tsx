@@ -22,7 +22,7 @@ import {
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { ErrorBoundary } from "react-error-boundary";
 import "./styles.css";
-import { NoteOperation } from "../../pages/Note/useNote";
+import { NoteOperation } from "../../pages/Note/hooks/useNote";
 
 // Define commands for formatting
 const FORMAT_TEXT_COMMAND = createCommand("FORMAT_TEXT_COMMAND");

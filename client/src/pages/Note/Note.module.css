@@ -1,132 +1,135 @@
+
+
+/* Container */
 .noteContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin: 1.5rem auto;
+  max-width: 900px;
+  min-height: 80vh;
+  transition: all var(--transition-speed) ease;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
+/* Header */
 .noteHeader {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(to right, #f8f9fc, #edf2fb);
+  z-index: 10;
+}
+
+.noteInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .noteTitle {
-  margin: 0 0 0.75rem;
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: #333;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--primary-color);
+  letter-spacing: -0.5px;
 }
 
 .noteMetadata {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  align-items: left;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-light);
 }
 
-.username, .lastUpdated, .updatedBy {
-  margin: 0.25rem 0;
+.username {
+  font-weight: 500;
+  color: var(--secondary-color);
 }
 
 .separator {
   margin: 0 0.5rem;
-  color: #ccc;
+  color: var(--border-color);
 }
 
+.lastUpdated {
+  font-style: italic;
+}
+
+/* Active Users */
 .headerRight {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+  align-items: center;
 }
 
 .activeUsers {
-  font-size: 0.85rem;
-  color: #4f46e5;
-  background-color: #eef2ff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
+  background: linear-gradient(120deg, var(--primary-light), #eeeeff);
+  padding: 0.6rem 1rem;
+  border-radius: 24px;
+  transition: all var(--transition-speed) ease;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(94, 96, 206, 0.1);
+}
+
+.activeUsers:hover {
+  box-shadow: 0 3px 10px rgba(94, 96, 206, 0.15);
+  transform: translateY(-1px);
 }
 
 .usersList {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 500;
 }
 
 .activeUser {
+  position: relative;
   font-weight: 500;
-}
-
-.noteContent {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: #444;
-}
-
-.contentLine {
-  margin-bottom: 1.2rem;
-}
-
-.loadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-}
-
-.loadingSpinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #09f;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-.errorMessage {
-  padding: 1.5rem;
-  background-color: #fff4f4;
-  border-left: 4px solid #f87171;
-  color: #b91c1c;
-  margin: 2rem 0;
-  border-radius: 4px;
-}
-
-.editButton {
-  background-color: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.editButton:hover {
-  background-color: #4338ca;
 }
 
 .editorWrapper {
-  background-color: #f9fafb;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
+  flex: 1;
+  padding: 1.5rem;
+  position: relative;
+  background-color: var(--surface-color);
 }
 
+
+/* Animations */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .noteContainer {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    border: none;
+  }
+  
+  .noteHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .headerRight {
+    align-self: flex-start;
+  }
 } 

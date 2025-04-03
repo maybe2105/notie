@@ -1,0 +1,61 @@
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: var(--text-light);
+  background-color: var(--surface-color);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(94, 96, 206, 0.1);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(94, 96, 206, 0.1);
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  font-size: 1.1rem;
+  color: var(--danger-color);
+  text-align: center;
+  padding: 0 2rem;
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+}
+
+/* Avatar Group for Users */
+.userAvatars {
+  display: flex;
+  margin-right: 0.75rem;
+}
+
+.userAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: -10px;
+  border: 2px solid white;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+
+.userAvatar:hover {
+  transform: translateY(-2px) scale(1.05);
+  z-index: 2;
+}

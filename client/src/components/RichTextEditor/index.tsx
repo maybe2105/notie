@@ -246,10 +246,6 @@ function RemoteOperationsPlugin({
     if (contentOp && contentOp.oi !== undefined) {
       // Dispatch the command to update content while preserving selection
       editor.dispatchCommand(REMOTE_UPDATE_COMMAND, contentOp.oi as string);
-      // editor.update(() => {
-      //   const root = $getRoot();
-      //   root.selectEnd();
-      // });
       clearOperations?.();
     }
   }, [operations, editor, clearOperations]);
@@ -281,6 +277,7 @@ function RemoteOperationsPlugin({
             }
             root.append(paragraph);
           });
+          root.selectEnd();
         });
 
         return true;

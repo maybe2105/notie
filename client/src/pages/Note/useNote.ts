@@ -73,17 +73,17 @@ export const useNote = (id: string) => {
 
     // Listen for changes (operations) on the document
     doc.on("op", (op: Array<NoteOperation>, source: boolean) => {
-      console.log("🚀 ~ doc.on ~ op:", op, source);
+      const mockOp = op.find((opItem) => opItem.p[0] === "mock");
+      if (mockOp) {
+        mockOp.p = ["content"];
+        setLastOperation([mockOp]);
+      }
 
       if (!source && isMounted) {
         const lastContentOp = op.find((opItem) => opItem.p[0] === "content");
         if (lastContentOp) {
           setLastOperation([lastContentOp]);
         }
-
-        // For operations from other users, signal the operation
-
-        // Also update our state model (but don't cause complete re-renders of content)
       }
       const newNoteData: Partial<Note> = {};
 
@@ -177,6 +177,7 @@ export const useNote = (id: string) => {
         // set it locally
         return;
       }
+
       docRef.current.submitOp(op, undefined, (err?: any) => {
         if (err) {
           console.error("Error submitting op:", err);
@@ -185,7 +186,6 @@ export const useNote = (id: string) => {
       });
     }
   };
-
   const clearOperations = useCallback(() => {
     setLastOperation(null);
   }, []);

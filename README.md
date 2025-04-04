@@ -10,6 +10,35 @@ A collaborative note-taking application with real-time editing and presence feat
 6. use React `ContextAPI` to handle state in main page, and use local state to handle data in isolated Note page,
 7. using `vitest` for components testing, run with `pnpm dev:test`
 
+## Demo
+
+https://github.com/maybe2105/notie/assets/HomePage.mov
+![Demo Video](assets/HomePage.mov)
+
+The video demonstrates the main features of Notie:
+
+- Creating and editing notes with rich text formatting
+- Real-time collaborative editing
+- Presence indicators showing who is currently editing
+- Infinite scrolling note list for performance
+
+## Editor Features
+
+https://github.com/maybe2105/notie/assets/Editor.mov
+![Editor Demo](assets/Editor.mov)
+
+The video showcases the rich text editor capabilities:
+
+- Formatting options including bold, italic, and lists
+- Real-time collaborative editing with multiple users
+- Changes synchronizing instantly across all connected clients
+- Markdown-style formatting shortcuts
+
+## Need to be improved
+
+- Capture style change in editor
+- Cursor position after receive update
+
 ### Prerequisites
 
 - Node.js 18+ and pnpm

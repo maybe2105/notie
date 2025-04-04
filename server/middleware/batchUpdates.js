@@ -3,8 +3,8 @@ import pool from "../config/db.js";
 // Batching system for Postgres updates
 const updateQueue = new Map(); // Map of noteId -> latest snapshot data
 let queueSize = 0;
-const BATCH_SIZE = 10; // Process after this many operations
-const FLUSH_INTERVAL = 5000; // Or process every 5 seconds
+const BATCH_SIZE = 5; // Process after this many operations
+const FLUSH_INTERVAL = 3000; // Or process every 5 seconds
 
 // Function to process the queue
 const processUpdateQueue = async () => {

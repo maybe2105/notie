@@ -27,11 +27,13 @@ export const useShareDbConnection = (
   useEffect(() => {
     let isMounted = true;
 
-    const socket = new ReconnectingWebSocket(
-      `ws://localhost:3001/notes/${id}`,
-      [],
-      { maxEnqueuedMessages: 0 }
-    );
+    // Use relative URL instead of hardcoded localhost
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const wsUrl = `${protocol}//${window.location.host}/notes/${id}`;
+
+    const socket = new ReconnectingWebSocket(wsUrl, [], {
+      maxEnqueuedMessages: 0,
+    });
 
     const connection = new ShareDB.Connection(socket as unknown as WebSocket);
     const doc = connection.get("notes", id);

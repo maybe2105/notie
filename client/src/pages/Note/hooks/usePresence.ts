@@ -10,7 +10,11 @@ export const usePresence = (id: string, username: string | null) => {
 
     if (!username) return;
 
-    const url = new URL(`ws://localhost:3001/presence/${id}`);
+    // Use relative URL instead of hardcoded localhost
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const baseUrl = `${protocol}//${window.location.host}/presence/${id}`;
+
+    const url = new URL(baseUrl);
     url.searchParams.append("username", username);
 
     const presenceSocket = new WebSocket(url.toString());

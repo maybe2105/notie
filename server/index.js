@@ -3,8 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "node:http";
 import { URL } from "url";
+import path from "path";
 
-// Load configurations
+const __dirname = path.resolve();
 dotenv.config();
 
 // Import modules
@@ -18,13 +19,39 @@ import { initBatchProcessing } from "./middleware/batchUpdates.js";
 // App configuration
 const app = express();
 const PORT = process.env.PORT || 3001;
+// log request url
+app.use((req, res, next) => {
+  console.log("request url", req.url);
+  next();
+});
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(express.static(path.join(__dirname, "build")));
+
 app.use(express.json());
 
 // API routes
-app.use("/notes", notesRouter);
+
+// frontend /api/notes
+app.use("/api/notes", notesRouter);
+
+// return frontend index.html
+app.use("/*", (req, res) => {
+  // production build
+  if (process.env.NODE_ENV === "production") {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+  } else {
+    res.sendFile(path.join(__dirname, "..", "client", "public", "index.html"));
+  }
+});
 
 // Create HTTP server
 const server = http.createServer(app);

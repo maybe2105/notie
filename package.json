@@ -10,10 +10,20 @@
     "dev:client": "cd client && pnpm run dev",
     "dev:server": "cd server && pnpm run dev",
     "dev": "concurrently \"pnpm:dev:client\" \"pnpm:dev:server\"",
+    "dev:db": "docker-compose -f docker-compose.dev.yml up -d",
+    "dev:db:down": "docker-compose -f docker-compose.dev.yml down",
+    "dev:full": "pnpm run dev:db && pnpm run dev",
     "build:client": "cd client && pnpm run build",
     "build:server": "cd server && pnpm run build",
     "build": "pnpm run build:client && pnpm run build:server",
-    "start": "cd server && pnpm start"
+    "start": "cd server && pnpm start",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:start": "pnpm run docker:build && pnpm run docker:up",
+    "docker:logs": "docker-compose logs -f",
+    "docker:rebuild": "docker-compose down && docker-compose build && docker-compose up -d",
+    "docker:clean": "docker-compose down -v"
   },
   "devDependencies": {
     "@types/react-window": "^1.8.8",

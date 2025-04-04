@@ -12,27 +12,25 @@ A collaborative note-taking application with real-time editing and presence feat
 
 ## Demo
 
-https://github.com/maybe2105/notie/assets/HomePage.mov
-![Demo Video](assets/HomePage.mov)
+https://github.com/maybe2105/notie/assets/HomePage.mp4
+![Demo Video](assets/HomePage.mp4)
 
 The video demonstrates the main features of Notie:
 
-- Creating and editing notes with rich text formatting
-- Real-time collaborative editing
-- Presence indicators showing who is currently editing
+- Creating and editing notes
 - Infinite scrolling note list for performance
 
 ## Editor Features
 
-https://github.com/maybe2105/notie/assets/Editor.mov
-![Editor Demo](assets/Editor.mov)
+https://github.com/maybe2105/notie/assets/Editor.mp4
+![Editor Demo](assets/Editor.mp4)
 
 The video showcases the rich text editor capabilities:
 
 - Formatting options including bold, italic, and lists
 - Real-time collaborative editing with multiple users
 - Changes synchronizing instantly across all connected clients
-- Markdown-style formatting shortcuts
+- Presence indicators showing who is currently editing
 
 ## Need to be improved
 

@@ -108,12 +108,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  useEffect(() => {
-    if (username) {
-      refreshNotes();
-    }
-  }, [username]);
-
   return (
     <NotesContext.Provider
       value={{

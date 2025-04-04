@@ -1,4 +1,4 @@
-import { Route, Switch, Redirect } from "wouter";
+import { Route, Switch } from "wouter";
 import { ToastContainer } from "react-fox-toast";
 
 import Navigator from "./components/Navigator";
@@ -11,6 +11,7 @@ import { lazy } from "react";
 const Home = lazy(() => import("./pages/Home"));
 const Note = lazy(() => import("./pages/Note"));
 const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 function AppContent() {
   return (
@@ -22,7 +23,7 @@ function AppContent() {
             <Route path={"/"} component={Home} />
             <Route path="/note/:id" component={Note} />
             <Route>
-              <Redirect to="/" />
+              <NotFound />
             </Route>
           </div>
         </div>
@@ -34,14 +35,10 @@ function AppContent() {
 function App() {
   const { username } = useAuth();
 
-  if (!username) {
-    return <Login />;
-  }
-
   return (
     <>
       <ToastContainer position="top-center" />
-      <AppContent />
+      {username ? <AppContent /> : <Login />}
     </>
   );
 }

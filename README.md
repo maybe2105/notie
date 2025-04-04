@@ -8,6 +8,7 @@ A collaborative note-taking application with real-time editing and presence feat
 4. use `Lexical` for Rich Text Editor
 5. use `react-window`, and `react-window-infinite-loader`, to increase performance, virtually display the long list and only load 20 items at a time to reduce load on backend
 6. use React `ContextAPI` to handle state in main page, and use local state to handle data in isolated Note page,
+7. using `vitest` for components testing, run with `pnpm dev:test`
 
 ### Prerequisites
 
@@ -75,6 +76,7 @@ This will start:
 | `pnpm run dev:db`     | Start only the PostgreSQL database            |
 | `pnpm run dev:client` | Start only the client development server      |
 | `pnpm run dev:server` | Start only the server development server      |
+| `pnpm run dev:test`   | Test frontend project                         |
 
 ## Production Deployment
 

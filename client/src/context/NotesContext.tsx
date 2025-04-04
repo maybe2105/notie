@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   ReactNode,
+  useCallback,
 } from "react";
 import { Note } from "../types/Note";
 import { useAuth } from "./AuthContext";
@@ -39,7 +40,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const { username } = useAuth();
   const LIMIT = 20;
 
-  const refreshNotes = async () => {
+  const refreshNotes = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -53,9 +54,9 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const loadMoreNotes = async () => {
+  const loadMoreNotes = useCallback(async () => {
     if (!hasMore || isLoading) return;
 
     try {
@@ -76,7 +77,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [hasMore, isLoading, page, notes]);
 
   const addnewNote = async (note: Note) => {
     setNotes((prevNotes) => [note, ...prevNotes]);

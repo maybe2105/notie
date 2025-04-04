@@ -14,7 +14,7 @@ const Home = () => {
 
   useEffect(() => {
     refreshNotes();
-  }, []);
+  }, [refreshNotes]);
 
   return (
     <div className={styles.homeContainer}>

@@ -18,11 +18,11 @@
     "build": "pnpm run build:client && pnpm run build:server",
     "start": "cd server && pnpm start",
     "docker:build": "docker-compose build",
-    "docker:up": "docker-compose up -d",
+    "docker:up": "docker-compose up",
     "docker:down": "docker-compose down",
     "docker:start": "pnpm run docker:build && pnpm run docker:up",
     "docker:logs": "docker-compose logs -f",
-    "docker:rebuild": "docker-compose down && docker-compose build && docker-compose up -d",
+    "docker:rebuild": "docker-compose down && docker-compose build && docker-compose up",
     "docker:clean": "docker-compose down -v"
   },
   "devDependencies": {

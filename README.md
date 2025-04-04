@@ -2,33 +2,51 @@
 
 A collaborative note-taking application with real-time editing and presence features.
 
-## Local Development
+1. Frontend stack is React + Typescript, powered by Vite`
+2. The requirements want to allow multiple users to edit a note in real-time, and handle conflict, after researching a bit i chose `sharedb` to handle real-time JSON document collaboration, with a simple `posgresql` as a DB to store notes
+3. Conflict will be solve by `sharedb` **Operational transformation (https://en.wikipedia.org/wiki/Operational_transformation)**, webserver will receive operations from frontend, then cast the change to frontend client that subscribed to the document, then client make change on openration received
+4. use `Lexical` for Rich Text Editor
+5. use `react-window`, and `react-window-infinite-loader`, to increase performance, virtually display the long list and only load 20 items at a time to reduce load on backend
+6. use React `ContextAPI` to handle state in main page, and use local state to handle data in isolated Note page,
 
 ### Prerequisites
 
 - Node.js 18+ and pnpm
 - Docker and Docker Compose (for PostgreSQL)
 
-### Setup
+### How to run immedialy with docker (Production mode)
+
+You dont have to install everything in this project to run, just need Docker and it's ready
+
+```bash
+git clone https://github.com/maybe2105/notie.git
+cd notie
+pnpm run docker:start
+```
+
+This will run everything with `docker-compose`, include setting up database, build frontend project, run web server
+</br>
+Then access
+
+```bash
+localhost:3000
+```
+
+More on the detail in the <a href="#production-deployment">Production deployment document</a>
+
+### Setup dev
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/notie.git
+git clone https://github.com/maybe2105/notie.git
 cd notie
 ```
 
-2. Install dependencies:
+2. Install (client + server) dependencies:
 
 ```bash
 pnpm install
-```
-
-3. Set up environment variables:
-
-```bash
-cp server/.env.example server/.env
-cp client/.env.example client/.env
 ```
 
 4. Start the database:
@@ -95,12 +113,3 @@ notie/
 ├── docker-compose.yml # Docker configuration
 └── package.json      # Root package.json with scripts
 ```
-
-## Decisions
-
-1. Frontend stack is React + Typescript, powered by Vite
-2. The requirements want to allow multiple users to edit a note in real-time, and handle conflict, after researching a bit i chose `sharedb` to handle real-time JSON document collaboration, with a simple `posgresql` as a DB to store notes
-3. Choose `postcss` for css-module
-4. Add `wouter` for routing, it's a 2.1kB routing library for react, very easy to use
-5. use `Lexical` for Rich Text Editor
-6. Handle confl

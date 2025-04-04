@@ -2,7 +2,7 @@
 
 A collaborative note-taking application with real-time editing and presence features.
 
-1. Frontend stack is React + Typescript, powered by Vite`
+1. Frontend stack is React + Typescript, powered by Vite
 2. The requirements want to allow multiple users to edit a note in real-time, and handle conflict, after researching a bit i chose `sharedb` to handle real-time JSON document collaboration, with a simple `posgresql` as a DB to store notes
 3. Conflict will be solve by `sharedb` **Operational transformation (https://en.wikipedia.org/wiki/Operational_transformation)**, webserver will receive operations from frontend, then cast the change to frontend client that subscribed to the document, then client make change on openration received
 4. use `Lexical` for Rich Text Editor

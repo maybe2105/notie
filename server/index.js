@@ -49,7 +49,7 @@ app.use("/*", (req, res) => {
   if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "build", "index.html"));
   } else {
-    res.sendFile(path.join(__dirname, "..", "client", "public", "index.html"));
+    res.sendFile(path.join(__dirname, "..", "client", "index.html"));
   }
 });
 

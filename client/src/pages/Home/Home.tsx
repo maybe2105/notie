@@ -6,7 +6,7 @@ import CreateNoteDialog from "./components/CreateNoteDialog";
 import HomeHeader from "./components/HomeHeader";
 
 const Home = () => {
-  const { notes, total } = useNotes();
+  const { total } = useNotes();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const openDialog = () => setIsDialogOpen(true);
@@ -15,7 +15,9 @@ const Home = () => {
   return (
     <div className={styles.homeContainer}>
       <HomeHeader total={total} openDialog={openDialog} />
-      <NoteList notes={notes} />
+      <div className={styles.noteListWrapper}>
+        <NoteList />
+      </div>
       <CreateNoteDialog isOpen={isDialogOpen} onClose={closeDialog} />
     </div>
   );

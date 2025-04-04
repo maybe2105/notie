@@ -1,14 +1,18 @@
 .noteListContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  height: calc(100vh - 150px);
+}
+
+.virtualGrid {
+  padding: 0;
+  margin: 0;
 }
 
 .noteWrapper {
-  position: relative;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 .noteLink {
@@ -16,6 +20,7 @@
   color: inherit;
   display: block;
   transition: all 0.3s ease;
+  height: 100%;
 }
 
 .noteCard {
@@ -35,6 +40,46 @@
     linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: -1px -1px;
+}
+
+.noteHeader {
+  margin-bottom: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.noteId {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+.loadingCard {
+  padding: 0.75rem;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.loadingCard .noteCard {
+  background: var(--background-color);
+  opacity: 0.6;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 /* Folded corner effect */
@@ -99,7 +144,7 @@
   color: var(--text-color);
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
 }
 
@@ -163,6 +208,8 @@
   border-radius: var(--border-radius);
   border: 2px dashed rgba(94, 96, 206, 0.15);
   box-shadow: var(--shadow-sm);
+  margin: 0 auto;
+  max-width: 600px;
 }
 
 .emptyState p {
@@ -173,12 +220,7 @@
 }
 
 @media (max-width: 768px) {
-  .noteListContainer {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-    padding: 1.5rem;
-  }
-
+ 
   .noteCard {
     height: 210px;
     padding: 1.5rem;
@@ -196,12 +238,7 @@
 }
 
 @media (max-width: 480px) {
-  .noteListContainer {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 1rem;
-  }
-
+  
   .noteCard {
     height: auto;
     min-height: 180px;

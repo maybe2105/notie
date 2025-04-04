@@ -19,7 +19,9 @@ interface NotesContextType {
   isLoading: boolean;
   error: string | null;
   total: number;
+  hasMore: boolean;
   refreshNotes: () => Promise<void>;
+  loadMoreNotes: () => Promise<void>;
   addnewNote: (note: Note) => Promise<void>;
   createNote: (content?: string) => Promise<Note>;
   removeNote: (id: string) => Promise<void>;
@@ -32,17 +34,45 @@ export function NotesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const { username } = useAuth();
+  const LIMIT = 20;
 
   const refreshNotes = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getNotes();
+      setPage(0);
+      const data = await getNotes(LIMIT, 0);
       setNotes(data.notes);
       setTotal(data.total);
+      setHasMore(data.notes.length < data.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMoreNotes = async () => {
+    if (!hasMore || isLoading) return;
+
+    try {
+      setIsLoading(true);
+      const nextPage = page + 1;
+      const data = await getNotes(LIMIT, nextPage * LIMIT);
+
+      if (data.notes.length > 0) {
+        setNotes((prevNotes) => [...prevNotes, ...data.notes]);
+        setPage(nextPage);
+      }
+
+      setHasMore(notes.length + data.notes.length < data.total);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to load more notes"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -91,9 +121,11 @@ export function NotesProvider({ children }: { children: ReactNode }) {
         isLoading,
         error,
         refreshNotes,
+        loadMoreNotes,
         addnewNote,
         createNote,
         total,
+        hasMore,
         removeNote,
       }}
     >

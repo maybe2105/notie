@@ -1,17 +1,40 @@
-import React, { useState } from "react";
-import { Link } from "wouter";
+import React, { useState, useRef, useEffect } from "react";
+import { useNotes } from "../../context/NotesContext";
 import { Note } from "../../types/Note";
 import styles from "./NoteList.module.css";
-import { formatDate, getPreviewContent } from "../../utils/note.utils";
+import { getPreviewContent } from "../../utils/note.utils";
 import DeleteNoteDialog from "../../pages/Home/components/DeleteNoteDialog";
+import NoteGrid from "./NoteGrid";
 
-interface NoteListProps {
-  notes: Note[];
-}
-
-const NoteList: React.FC<NoteListProps> = ({ notes }) => {
+const NoteList: React.FC = () => {
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { hasMore, loadMoreNotes, isLoading, notes } = useNotes();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [columnCount, setColumnCount] = useState(2);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setDimensions({ width, height });
+
+        // Determine number of columns based on container width
+        if (width < 480) {
+          setColumnCount(1);
+        } else if (width < 768) {
+          setColumnCount(2);
+        } else {
+          setColumnCount(3);
+        }
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
 
   const openDeleteDialog = (e: React.MouseEvent, note: Note) => {
     e.preventDefault();
@@ -26,39 +49,22 @@ const NoteList: React.FC<NoteListProps> = ({ notes }) => {
   };
 
   return (
-    <div className={styles.noteListContainer}>
-      {notes.map((note) => (
-        <Link
-          key={note.id}
-          href={`/note/${note.id}`}
-          className={styles.noteLink}
-        >
-          <article className={styles.noteCard}>
-            <div className={styles.noteContent}>
-              <p className={styles.preview}>
-                {getPreviewContent(note.content)}
-              </p>
-            </div>
-            <div className={styles.noteFooter}>
-              <span className={styles.date}>
-                Last updated: {formatDate(note.updatedAt)}
-              </span>
-              <button
-                className={styles.deleteButton}
-                onClick={(e) => openDeleteDialog(e, note)}
-                aria-label="Delete note"
-              >
-                <span className={styles.deleteIcon}>Delete</span>
-              </button>
-            </div>
-          </article>
-        </Link>
-      ))}
-      {notes.length === 0 && (
+    <div className={styles.noteListContainer} ref={containerRef}>
+      {dimensions.width > 0 && notes.length > 0 ? (
+        <NoteGrid
+          notes={notes}
+          dimensions={dimensions}
+          columnCount={columnCount}
+          hasMore={hasMore}
+          isLoading={isLoading}
+          loadMoreNotes={loadMoreNotes}
+          openDeleteDialog={openDeleteDialog}
+        />
+      ) : notes.length === 0 ? (
         <div className={styles.emptyState}>
           <p>No notes yet. Start creating!</p>
         </div>
-      )}
+      ) : null}
 
       {noteToDelete && (
         <DeleteNoteDialog

@@ -17,12 +17,11 @@ import {
   LexicalNode,
   $createTextNode,
   EditorState,
-  PointType,
 } from "lexical";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { ErrorBoundary } from "react-error-boundary";
 import "./styles.css";
-import { NoteOperation } from "../../pages/Note/hooks/useNote";
+import { NoteOperation } from "../../pages/Note/hooks/useShareDBConnection";
 
 // Define commands for formatting
 const FORMAT_TEXT_COMMAND = createCommand("FORMAT_TEXT_COMMAND");
